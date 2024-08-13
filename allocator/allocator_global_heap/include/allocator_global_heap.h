@@ -1,10 +1,10 @@
 #ifndef MATH_PRACTICE_AND_OPERATING_SYSTEMS_ALLOCATOR_ALLOCATOR_GLOBAL_HEAP_H
 #define MATH_PRACTICE_AND_OPERATING_SYSTEMS_ALLOCATOR_ALLOCATOR_GLOBAL_HEAP_H
 
-#include <allocator.h>
-#include <logger.h>
-#include <logger_guardant.h>
-#include <typename_holder.h>
+#include "../../allocator/include/allocator.h"
+#include "../../../logger/logger/include/logger.h"
+#include "../../../logger/logger/include/logger_guardant.h"
+#include "../../../common/include/typename_holder.h"
 
 class allocator_global_heap final:
     public allocator,
@@ -17,7 +17,6 @@ private:
     logger *_logger;
 
 public:
-    
     explicit allocator_global_heap(
         logger *logger = nullptr);
     
@@ -36,18 +35,13 @@ public:
         allocator_global_heap &&other) noexcept;
 
 public:
-    
+
     [[nodiscard]] void *allocate(
         size_t value_size,
         size_t values_count) override;
     
     void deallocate(
         void *at) override;
-
-public:
-    
-    void foo()
-    {};
 
 private:
     

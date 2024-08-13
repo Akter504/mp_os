@@ -1,13 +1,13 @@
 #include <gtest/gtest.h>
 #include <iostream>
-#include <allocator_global_heap.h>
-#include <client_logger_builder.h>
-#include <logger.h>
-#include <logger_builder.h>
+#include "../include/allocator_global_heap.h"
+#include "../../../logger/client_logger/include/client_logger.h"
+#include "../../../logger/logger/include/logger.h"
+#include "../../../logger/logger/include/logger_builder.h"
 
 TEST(allocatorGlobalHeapTests, test1)
 {
-    logger_builder *logger_builder_instance = new client_logger_builder;
+    logger_builder *logger_builder_instance = new client_logger_builder();
     
     logger *logger_instance = logger_builder_instance
         ->add_file_stream("gh_alc_test1_logs.txt", logger::severity::debug)
