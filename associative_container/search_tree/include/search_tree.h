@@ -6,6 +6,7 @@
 #include <stack>
 #include <vector>
 
+#include <typename_holder.h>
 #include <allocator.h>
 #include <allocator_guardant.h>
 #include <associative_container.h>
@@ -19,7 +20,8 @@ template<
 class search_tree:
     public associative_container<tkey, tvalue>,
     protected allocator_guardant,
-    protected logger_guardant
+    protected logger_guardant,
+    protected typename_holder
 {
 
 public:
@@ -43,15 +45,88 @@ public:
         
     };
 
+enum class insertion_of_existent_key_attempt_strategy
+    {
+        update_value,
+        throw_an_exception
+    };
+    
+    enum class disposal_of_nonexistent_key_attempt_strategy
+    {
+        do_nothing,
+        throw_an_exception
+    };
+
+class obtaining_of_nonexistent_key_attempt_exception final:
+        public std::logic_error
+    {
+    
+    private:
+        
+        tkey _key;
+        
+    public:
+        
+        explicit obtaining_of_nonexistent_key_attempt_exception(
+            tkey const &key);
+        
+    public:
+        
+        tkey const &get_key() const noexcept;
+        
+    };
+
+class disposal_of_nonexistent_key_attempt_exception final:
+        public std::logic_error
+    {
+    
+    private:
+        
+        tkey _key;
+    
+    public:
+        
+        explicit disposal_of_nonexistent_key_attempt_exception(
+            tkey const &key);
+        
+    public:
+        
+        tkey const &get_key() const noexcept;
+    
+    };
+
+class insertion_of_existent_key_attempt_exception final:
+        public std::logic_error
+    {
+    
+    private:
+        
+        tkey _key;
+    
+    public:
+        
+        explicit insertion_of_existent_key_attempt_exception(
+            tkey const &key);
+        
+    public:
+        
+        tkey const &get_key() const noexcept;
+    
+    };
+
 protected:
     
     std::function<int(tkey const &, tkey const &)> _keys_comparer;
 
-private:
+protected:
     
     logger *_logger;
     
     allocator *_allocator;
+    
+    insertion_of_existent_key_attempt_strategy _insertion_strategy;
+
+    disposal_of_nonexistent_key_attempt_strategy _disposal_strategy;
 
 protected:
     
@@ -102,9 +177,63 @@ template<
 search_tree<tkey, tvalue>::search_tree(
     std::function<int(tkey const &, tkey const &)> keys_comparer,
     logger *logger,
-    allocator *allocator)
+    allocator *allocator):
+        _keys_comparer(keys_comparer),
+        _logger(logger),
+        _allocator(allocator)
 {
-    throw not_implemented("template<typename tkey, typename tvalue> search_tree<tkey, tvalue>::search_tree(std::function<int(tkey const &, tkey const &)>, logger *, allocator *)", "your code should be here...");
+
+}
+
+template<
+    typename tkey,
+    typename tvalue>
+search_tree<tkey, tvalue>::insertion_of_existent_key_attempt_exception::insertion_of_existent_key_attempt_exception(
+    tkey const &key):
+        std::logic_error("Attempt to insert already existing key inside the tree."),
+        _key(key)
+{ }
+
+template<
+    typename tkey,
+    typename tvalue>
+tkey const &search_tree<tkey, tvalue>::insertion_of_existent_key_attempt_exception::get_key() const noexcept
+{
+    return _key;
+}
+
+template<
+    typename tkey,
+    typename tvalue>
+search_tree<tkey, tvalue>::obtaining_of_nonexistent_key_attempt_exception::obtaining_of_nonexistent_key_attempt_exception(
+    tkey const &key):
+        std::logic_error("Attempt to obtain a value by non-existing key from the tree."),
+        _key(key)
+{ }
+
+template<
+    typename tkey,
+    typename tvalue>
+tkey const &search_tree<tkey, tvalue>::obtaining_of_nonexistent_key_attempt_exception::get_key() const noexcept
+{
+    return _key;
+}
+
+template<
+    typename tkey,
+    typename tvalue>
+search_tree<tkey, tvalue>::disposal_of_nonexistent_key_attempt_exception::disposal_of_nonexistent_key_attempt_exception(
+    tkey const &key):
+        std::logic_error("Attempt to dispose a value by non-existing key from the tree."),
+        _key(key)
+{ }
+
+template<
+    typename tkey,
+    typename tvalue>
+tkey const &search_tree<tkey, tvalue>::disposal_of_nonexistent_key_attempt_exception::get_key() const noexcept
+{
+    return _key;
 }
 
 template<
@@ -112,7 +241,7 @@ template<
     typename tvalue>
 [[nodiscard]] inline allocator *search_tree<tkey, tvalue>::get_allocator() const
 {
-    throw not_implemented("template<typename tkey, typename tvalue> [[nodiscard]] inline allocator *search_tree<tkey, tvalue>::get_allocator() const", "your code should be here...");
+    return _allocator;
 }
 
 template<
@@ -120,7 +249,7 @@ template<
     typename tvalue>
 [[nodiscard]] inline logger *search_tree<tkey, tvalue>::get_logger() const
 {
-    throw not_implemented("template<typename tkey, typename tvalue> [[nodiscard]] inline logger *search_tree<tkey, tvalue>::get_logger() const", "your code should be here...");
+    return _logger;
 }
 
 #endif //MATH_PRACTICE_AND_OPERATING_SYSTEMS_SEARCH_TREE_H
