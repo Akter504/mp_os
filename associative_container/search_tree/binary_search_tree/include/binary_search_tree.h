@@ -3476,7 +3476,27 @@ void binary_search_tree<tkey, tvalue>::small_left_rotation(
     binary_search_tree<tkey, tvalue>::node *&subtree_root,
     bool validate) const
 {
-    throw not_implemented("template<typename tkey, typename tvalue> void binary_search_tree<tkey, tvalue>::small_left_rotation(binary_search_tree<tkey, tvalue>::node *&, bool) const", "your code should be here...");
+    this->trace_with_guard(get_typename() + "::small_left_rotation() : called.")
+        ->debug_with_guard(get_typename() + "::small_left_rotation() : called.")
+        ->debug_with_guard(get_typename() + "::small_left_rotation() : rotating node with key \"" + 
+            extra_utility::make_string(subtree_root->key) + "\"");
+    
+    if (validate && (subtree_root == nullptr || subtree_root->right_subtree == nullptr))
+    {
+        throw std::logic_error("Cannot perform small left rotation");
+    }
+    
+    binary_search_tree<tkey, tvalue>::node *new_subtree_root = subtree_root->right_subtree;
+    
+    subtree_root->right_subtree = new_subtree_root->left_subtree;
+    new_subtree_root->left_subtree = subtree_root;
+    subtree_root = new_subtree_root;
+    
+    update_node_data(new_subtree_root->left_subtree);
+    update_node_data(new_subtree_root);
+    
+    this->trace_with_guard(get_typename() + "::small_left_rotation() : successfuly finished.")
+        ->debug_with_guard(get_typename() + "::small_left_rotation() : successfuly finished.");
 }
 
 template<
@@ -3486,7 +3506,27 @@ void binary_search_tree<tkey, tvalue>::small_right_rotation(
     binary_search_tree<tkey, tvalue>::node *&subtree_root,
     bool validate) const
 {
-    throw not_implemented("template<typename tkey, typename tvalue> void binary_search_tree<tkey, tvalue>::small_right_rotation(binary_search_tree<tkey, tvalue>::node *&, bool) const", "your code should be here...");
+    this->trace_with_guard(get_typename() + "::small_right_rotation() : called.")
+        ->debug_with_guard(get_typename() + "::small_right_rotation() : called.")
+        ->debug_with_guard(get_typename() + "::small_right_rotation() : rotating node with key \"" + 
+            extra_utility::make_string(subtree_root->key) + "\"");
+    
+    if (validate && (subtree_root == nullptr || subtree_root->left_subtree == nullptr))
+    {
+        throw std::logic_error("Cannot perform small right rotation");
+    }
+    
+    binary_search_tree<tkey, tvalue>::node *new_subtree_root = subtree_root->left_subtree;
+    
+    subtree_root->left_subtree = new_subtree_root->right_subtree;
+    new_subtree_root->right_subtree = subtree_root;
+    subtree_root = new_subtree_root;
+    
+    update_node_data(new_subtree_root->right_subtree);
+    update_node_data(new_subtree_root);
+    
+    this->trace_with_guard(get_typename() + "::small_right_rotation() : successfuly finished.")
+        ->debug_with_guard(get_typename() + "::small_right_rotation() : successfuly finished.");
 }
 
 template<
@@ -3496,7 +3536,20 @@ void binary_search_tree<tkey, tvalue>::big_left_rotation(
     binary_search_tree<tkey, tvalue>::node *&subtree_root,
     bool validate) const
 {
-    throw not_implemented("template<typename tkey, typename tvalue> void binary_search_tree<tkey, tvalue>::big_left_rotation(binary_search_tree<tkey, tvalue>::node *&, bool) const", "your code should be here...");
+    this->trace_with_guard(get_typename() + "::big_left_rotation() : called.")
+        ->debug_with_guard(get_typename() + "::big_left_rotation() : called.");
+    
+    if (validate && (subtree_root == nullptr ||
+            subtree_root->right_subtree == nullptr || subtree_root->right_subtree->left_subtree == nullptr))
+    {
+        throw std::logic_error("Cannot perform big left rotation");
+    }
+    
+    small_right_rotation(subtree_root->right_subtree, false);
+    small_left_rotation(subtree_root, false);
+    
+    this->trace_with_guard(get_typename() + "::big_left_rotation() : successfuly finished.")
+        ->debug_with_guard(get_typename() + "::big_left_rotation() : successfuly finished.");
 }
 
 template<
@@ -3506,7 +3559,20 @@ void binary_search_tree<tkey, tvalue>::big_right_rotation(
     binary_search_tree<tkey, tvalue>::node *&subtree_root,
     bool validate) const
 {
-    throw not_implemented("template<typename tkey, typename tvalue> void binary_search_tree<tkey, tvalue>::big_right_rotation(binary_search_tree<tkey, tvalue>::node *&, bool) const", "your code should be here...");
+    this->trace_with_guard(get_typename() + "::big_right_rotation() : called.")
+        ->debug_with_guard(get_typename() + "::big_right_rotation() : called.");
+    
+    if (validate && (subtree_root == nullptr ||
+            subtree_root->left_subtree == nullptr || subtree_root->left_subtree->right_subtree == nullptr))
+    {
+        throw std::logic_error("Cannot perform big right rotation");
+    }
+    
+    small_left_rotation(subtree_root->left_subtree, false);
+    small_right_rotation(subtree_root, false);
+    
+    this->trace_with_guard(get_typename() + "::big_right_rotation() : successfuly finished.")
+        ->debug_with_guard(get_typename() + "::big_right_rotation() : successfuly finished.");
 }
 
 template<
@@ -3517,7 +3583,28 @@ void binary_search_tree<tkey, tvalue>::double_left_rotation(
     bool at_grandparent_first,
     bool validate) const
 {
-    throw not_implemented("template<typename tkey, typename tvalue> void binary_search_tree<tkey, tvalue>::double_left_rotation(binary_search_tree<tkey, tvalue>::node *&, bool, bool) const", "your code should be here...");
+    this->trace_with_guard(get_typename() + "::double_left_rotation() : called.")
+        ->debug_with_guard(get_typename() + "::double_left_rotation() : called.");
+    
+    if (validate && (subtree_root == nullptr ||
+            subtree_root->right_subtree == nullptr || subtree_root->right_subtree->right_subtree == nullptr))
+    {
+        throw std::logic_error("Cannot perform double right rotation");
+    }
+    
+    if (at_grandparent_first)
+    {
+        small_left_rotation(subtree_root, false);
+        small_left_rotation(subtree_root, false);
+    }
+    else
+    {
+        small_left_rotation(subtree_root->right, false);
+        small_left_rotation(subtree_root, false);
+    }
+    
+    this->trace_with_guard(get_typename() + "::double_left_rotation() : successfuly finished.")
+        ->debug_with_guard(get_typename() + "::double_left_rotation() : successfuly finished.");
 }
 
 template<
@@ -3528,7 +3615,28 @@ void binary_search_tree<tkey, tvalue>::double_right_rotation(
     bool at_grandparent_first,
     bool validate) const
 {
-    throw not_implemented("template<typename tkey, typename tvalue> void binary_search_tree<tkey, tvalue>::double_right_rotation(binary_search_tree<tkey, tvalue>::node *&, bool, bool) const", "your code should be here...");
+    this->trace_with_guard(get_typename() + "::double_right_rotation() : called.")
+        ->debug_with_guard(get_typename() + "::double_right_rotation() : called.");
+    
+    if (validate && (subtree_root == nullptr ||
+            subtree_root->left_subtree == nullptr || subtree_root->left_subtree->left_subtree == nullptr))
+    {
+        throw std::logic_error("Cannot perform double left rotation");
+    }
+    
+    if (at_grandparent_first)
+    {
+        small_left_rotation(subtree_root, false);
+        small_left_rotation(subtree_root, false);
+    }
+    else
+    {
+        small_left_rotation(subtree_root->left, false);
+        small_left_rotation(subtree_root, false);
+    }
+    
+    this->trace_with_guard(get_typename() + "::double_right_rotation() : successfuly finished.")
+        ->debug_with_guard(get_typename() + "::double_right_rotation() : successfuly finished.");
 }
 
 // endregion subtree rotations implementation
